@@ -75,6 +75,47 @@ contract Staking {
             specificStake.withdrawn
         );
     }
-    
+    function calculatePenalty(address account,uint _index) internal view returns(uint256){
+        Stake memory specificStake = stakes[account][_index];
+        uint256 penalty = 0;
+        require(specificStake.withdrawn == false, "Stake is already withdrawn");
+        //lockup period already passed in hours 
+        uint stake_duration = (block.timestamp - specificStake.timestamp)/ 1 hours ;
+        //transform declared lockup period from months to hours
+        uint declared_lockup_period = specificStake.lockup_period * 730;
+        //calculate penalty
+        if (specificStake.lockup)
+            if (stake_duration < declared_lockup_period)
+                penalty = (specificStake.amount *_PENALTY)/100;
+        return penalty;
+    }
+
+    function calculateStakeReward(address account,uint _index) internal view returns(uint256){
+        // First calculate how long the stake has been active
+        // Use current seconds - the seconds since the stake was made
+        // The output will be the stake duration in SECONDS ,
+        // We will reward the user 10% per year when no-lockup. So thats 10% divided by 8760 hours => 0.0011% per hour.
+        // the alghoritm is  seconds = block.timestamp - stake seconds (block.timestap - _stake.since)
+        // we then multiply the amount of tokens with the hours staked , then divide by the rewardPerHour rate
+        Stake memory specificStake = stakes[account][_index];
+        require(specificStake.withdrawn == false, "Stake is already withdrawn");
+        uint256 rewardPerHour = 110000;
+        bool rewards = false;
+        uint256 reward = 0;
+        //stake duration in seconds
+        uint256 stake_duration = (block.timestamp - specificStake.timestamp);
+        if (specificStake.lockup)
+            //check that for a lockup_period of 6 months,the stake duration is at least equal to 6 months in seconds 
+            if (specificStake.lockup_period==6 && stake_duration>=15768000){
+                rewardPerHour = 460000;
+                rewards = true;
+            }else if (specificStake.lockup_period==12 && stake_duration>31536000){
+                rewardPerHour = 34000;
+                rewards = true;
+            }
+        if (rewards)
+            reward = ((stake_duration / 1 hours) * specificStake.amount) / rewardPerHour;            
+        return reward;
+    }
 
 }
