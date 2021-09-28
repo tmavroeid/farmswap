@@ -3,6 +3,7 @@ pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Address.sol";
 
 import "./FarmCoin.sol";
 import "./Staking.sol";
@@ -20,6 +21,28 @@ contract FarmSwap is Ownable,Staking{
     constructor(ERC20 token) {
         farmcoin = new FarmCoin(8000000000000);
         _usdc = token;
+    }
+
+    function getFarmCoinBalance(address account) public view returns (uint256) {
+        return farmcoin.balanceOf(account);
+    }
+
+    function getFarmCoinOwner() public view returns (address) {
+        return farmcoin.owner();
+    }
+
+    function deposit(uint256 _amount, bool _lockup, uint _lockup_period) public {
+        require(_amount > 0, "FarmSwap: USDC tokens should be more than zero");
+        // keep track of this stake for the sender
+        stake(msg.sender, _amount, _lockup, _lockup_period);
+    }
+
+    function getNumOfStakes() public view returns(uint){
+        return stakesCount(msg.sender);
+    }
+
+    function getStakeInfo(uint _stake_index) public view returns(address,uint256, uint256, bool, uint, bool){
+        return stakeInfo(msg.sender, _stake_index);
     }
 
 }
