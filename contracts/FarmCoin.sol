@@ -6,10 +6,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract FarmCoin is Ownable,ERC20 {
     mapping (address => uint256) balances;
+    address private _owner;
     uint256 _totalSupply;
     
     constructor(uint _amount) ERC20("Farm Coin", "FMC"){
         _totalSupply = _amount;
+        _owner = msg.sender;
         balances[msg.sender] = _amount;
     }
 
@@ -17,8 +19,7 @@ contract FarmCoin is Ownable,ERC20 {
         return 10;
     }
 
-    function balanceOf(address account) public view override returns (uint256){
-        require(msg.sender==account, "only the owner of an account can see his balance");
+    function balanceOf(address account) public view override onlyOwner returns (uint256){
         return balances[account];
     }
 
