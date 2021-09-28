@@ -33,6 +33,8 @@ contract FarmSwap is Ownable,Staking{
 
     function deposit(uint256 _amount, bool _lockup, uint _lockup_period) public {
         require(_amount > 0, "FarmSwap: USDC tokens should be more than zero");
+        // transfer the amount of USDC to the contract 
+        _usdc.transferFrom(msg.sender, address(this), _amount);
         // keep track of this stake for the sender
         stake(msg.sender, _amount, _lockup, _lockup_period);
     }
