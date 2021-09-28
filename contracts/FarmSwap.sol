@@ -65,7 +65,7 @@ contract FarmSwap is Ownable,Staking{
         }
         //transfer FarmCoin rewards
         require(reward < farmcoin.totalSupply(), "FarmSwap: The amount of FarmCoins should me smaller than the totalSupply");
-        if(farmcoin.transferFrom(address(this), msg.sender, reward)){
+        if(farmcoin.transfer(msg.sender, reward)){
             emit RewardWithdrawn(msg.sender, reward);
         }else{
             revert("Unable to transfer FarmCoins");
