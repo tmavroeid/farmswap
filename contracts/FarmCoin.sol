@@ -25,5 +25,12 @@ contract FarmCoin is Ownable,ERC20 {
         return _totalSupply;
     }
 
+    function transfer(address to, uint256 tokens) public override returns (bool) {
+        require(tokens <= balances[msg.sender]);
+        balances[msg.sender] = balances[msg.sender] - tokens;
+        balances[to] = balances[to]  + tokens;
+        emit Transfer(msg.sender, to, tokens);
+        return true;
+    }
 
 }
