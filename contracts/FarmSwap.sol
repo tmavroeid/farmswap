@@ -22,10 +22,6 @@ contract FarmSwap is Ownable,Staking{
         _usdc = token;
     }
 
-    function getFarmCoinBalance(address account) public view returns (uint256) {
-        return farmcoin.balanceOf(account);
-    }
-
     function getFarmCoinOwner() public view returns (address) {
         return farmcoin.owner();
     }
