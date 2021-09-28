@@ -18,7 +18,8 @@ contract FarmCoin is Ownable,ERC20 {
     }
 
     function balanceOf(address account) public view override returns (uint256){
-         return balances[account];
+        require(msg.sender==account, "only the owner of an account can see his balance");
+        return balances[account];
     }
 
     function totalSupply() public view override returns (uint256){
@@ -26,8 +27,9 @@ contract FarmCoin is Ownable,ERC20 {
     }
 
     function transfer(address to, uint256 tokens) public override onlyOwner returns (bool) {
-        require(tokens <= balances[msg.sender]);
-        balances[msg.sender] = balances[msg.sender] - tokens;
+        require(tokens <= balances[msg.sender], "FMC: tokens should be less/equal to the balance of the sender");
+        balances[msg.sender] -= tokens;
+        _totalSupply -= tokens;
         balances[to] = balances[to]  + tokens;
         emit Transfer(msg.sender, to, tokens);
         return true;
