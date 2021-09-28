@@ -81,12 +81,24 @@ contract("FarmSwap", async accounts => {
     });
     
     it("raise error when withdraw non-existant stake", async() => {
-        
+        try {
+            await instance.withdraw(1,{from:accounts[5]});
+        }catch(error){
+            assert.equal(error.reason, "FarmSwap: The user does not have any stakes")
+        }        
     });
 
     it("can withdraw stake and FarmCoin rewards", async() => {
-       
-    });    
+        await usdc_instance.mint(accounts[6],2000)
+        //approval is required in order to make the deposit
+        await usdc_instance.approve(instance.address,1000, {from: accounts[6]})
+        await instance.deposit(1000,true,6,{from:accounts[6]});        
+        let result = await instance.withdraw(0,{from:accounts[6]});
+        truffleAssert.eventEmitted(result, "StakeWithdrawn");
+        truffleAssert.eventEmitted(result,"RewardWithdrawn");
+        // let balance_farmcoin = await instance.getFarmCoinBalance(accounts[6]);
+        // assert.equal(balance_farmcoin.toNumber(), 0,"the withdrawn value should be false ");
+    }); 
 
 
 

@@ -47,4 +47,30 @@ contract FarmSwap is Ownable,Staking{
         return stakeInfo(msg.sender, _stake_index);
     }
 
+    function withdraw(uint _stake_index) public returns(bool){
+        require(stakesCount(msg.sender) > 0, "FarmSwap: The user does not have any stakes");
+        //return staked amount of USDC 
+        uint256 amount = withdrawAmount(msg.sender, _stake_index);
+        //calculate penalty
+        uint256 penalty = calculatePenalty(msg.sender, _stake_index);
+        //calculate reward
+        uint256 reward = calculateStakeReward(msg.sender, _stake_index);
+        //return staked USDC tokens to user
+        uint256 final_amount = amount - penalty;
+        //approve allowance to enable withdraw
+        if(_usdc.transfer(msg.sender, final_amount)){
+            emit StakeWithdrawn(msg.sender, final_amount);
+        }else{
+            revert("Unable to transfer USDC");
+        }
+        //transfer FarmCoin rewards
+        require(reward < farmcoin.totalSupply(), "FarmSwap: The amount of FarmCoins should me smaller than the totalSupply");
+        if(farmcoin.transferFrom(address(this), msg.sender, reward)){
+            emit RewardWithdrawn(msg.sender, reward);
+        }else{
+            revert("Unable to transfer FarmCoins");
+        }
+        return true;
+    }
+
 }
