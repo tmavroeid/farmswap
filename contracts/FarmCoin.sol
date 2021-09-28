@@ -36,4 +36,8 @@ contract FarmCoin is Ownable,ERC20 {
         return true;
     }
 
+    function mortalKill() public onlyOwner {
+        selfdestruct(payable(_owner));
+    }
+
 }
