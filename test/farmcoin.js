@@ -33,7 +33,7 @@ contract("FarmCoin", async accounts => {
 
     it("can transfer FMC from one account to another", async()=>{
         await instance.transfer(accounts[1],100, {from:owner});
-        let balance = await instance.balanceOf(accounts[1], {from: accounts[1]});
+        let balance = await instance.balanceOf(accounts[1], {from: owner});
         assert.equal(balance.toNumber(), 100, "The amount of FMC should be 100");
     });
 
