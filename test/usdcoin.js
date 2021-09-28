@@ -16,6 +16,16 @@ contract("USDCoin", async accounts => {
         assert.equal("USDC", await instance.symbol.call());
     });
 
+    it("can get the decimals", async() => {
+        let dec = await instance.decimals.call()
+        assert.equal(dec,6, "Decimals should be 6");
+    });
+
+    it("can get the totalSupply", async() => {
+        let totalSupply = await instance.totalSupply.call()
+        assert.equal(Number(totalSupply),100000000000000000000000000, "Total supply should be 8000");
+    });
+    
     it("minting", async() => {
         // use account 1 since that account should have 0 
         let intial_balance = await instance.balanceOf(accounts[3]);
