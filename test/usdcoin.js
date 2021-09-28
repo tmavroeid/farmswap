@@ -98,4 +98,25 @@ contract("USDCoin", async accounts => {
             assert.equal(error.reason, "USDC: tokens should be less/equal to the balance of the sender")
         }
     });
+    
+
+    it("can approve allowance for an account", async()=>{
+        let result = await instance.approve(accounts[1],1000, {from: owner});
+        truffleAssert.eventEmitted(result,"Approval");
+    });
+
+    it("can approve allowance for an account", async()=>{
+        try {
+           await instance.approve(accounts[2],1000, {from: accounts[1]});
+        }catch(error){
+            assert.equal(error.reason, "USDC: the amount of tokens to be allowed should more than the total balance")
+        }
+    });
+
+    it("can delegate an account to transfer USDC on behalf of another", async()=>{
+        await instance.approve(accounts[1],1000, {from: owner});
+        let result = await instance.transferFrom(owner,accounts[1], 1000,{from:accounts[1]});
+        truffleAssert.eventEmitted(result, "Transfer");
+    });
+
 });
