@@ -23,10 +23,6 @@ contract Staking {
 
     event Staked(address indexed user, uint256 amount, uint256 timestamp);
 
-    
-    /**
-    * stake is used to make a stake for an sender. It will remove the amount staked from the stakers account and place those tokens 
-    */
     function stake(address account, uint256 _amount, bool _lockup, uint _lockup_period) internal {
         // Simple check so that user does not stake 0 
         require(_amount > 0, "Cannot stake nothing");
