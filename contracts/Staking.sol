@@ -44,13 +44,18 @@ contract Staking {
     /**
      * withdrawStake takes in an account and a index of the stake and returns the amount to be withdrawn
     */
-    function withdrawAmount(address account, uint _index) internal view returns(uint256){
+    function withdrawAmount(address account, uint _index) internal view returns(uint256, uint256, uint256){
+        require( stakes[account].length > 0, "The user does not have any stakes");
         // Grab user_index which is the index to use to grab the Stake[]
         Stake memory specificStake = stakes[account][_index];
+        //calculate penalty
+        uint256 penalty = calculatePenalty(specificStake);
+        //calculate reward
+        uint256 reward = calculateStakeReward(specificStake);
         //Check if the stake is already withdrawn
         require(specificStake.withdrawn == false, "Stake is already withdrawn");
         uint256 amount = specificStake.amount;
-        return amount;
+        return (amount, penalty, reward);
 
     }
 
@@ -71,8 +76,7 @@ contract Staking {
             specificStake.withdrawn
         );
     }
-    function calculatePenalty(address account,uint _index) internal view returns(uint256){
-        Stake memory specificStake = stakes[account][_index];
+    function calculatePenalty(Stake memory specificStake) private view returns(uint256){
         uint256 penalty = 0;
         require(specificStake.withdrawn == false, "Stake is already withdrawn");
         //lockup period already passed in hours 
@@ -86,14 +90,13 @@ contract Staking {
         return penalty;
     }
 
-    function calculateStakeReward(address account,uint _index) internal view returns(uint256){
+    function calculateStakeReward(Stake memory specificStake) private view returns(uint256){
         // First calculate how long the stake has been active
         // Use current seconds - the seconds since the stake was made
         // The output will be the stake duration in SECONDS ,
         // We will reward the user 10% per year when no-lockup. So thats 10% divided by 8760 hours => 0.0011% per hour.
         // the alghoritm is  seconds = block.timestamp - stake seconds (block.timestap - _stake.since)
         // we then multiply the amount of tokens with the hours staked , then divide by the rewardPerHour rate
-        Stake memory specificStake = stakes[account][_index];
         require(specificStake.withdrawn == false, "Stake is already withdrawn");
         uint256 rewardPerHour = 110000;
         bool rewards = false;
