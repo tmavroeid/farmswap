@@ -22,11 +22,11 @@ contract FarmSwap is Ownable,Staking{
         _usdc = token;
     }
 
-    function getFarmCoinOwner() public view returns (address) {
+    function getFarmCoinOwner() external view returns (address) {
         return farmcoin.owner();
     }
 
-    function deposit(uint256 _amount, bool _lockup, uint _lockup_period) public {
+    function deposit(uint256 _amount, bool _lockup, uint _lockup_period) external {
         require(_amount > 0, "FarmSwap: USDC tokens should be more than zero");
         // transfer the amount of USDC to the contract 
         _usdc.transferFrom(msg.sender, address(this), _amount);
@@ -34,23 +34,17 @@ contract FarmSwap is Ownable,Staking{
         stake(msg.sender, _amount, _lockup, _lockup_period);
     }
 
-    function getNumOfStakes() public view returns(uint){
+    function getNumOfStakes() external view returns(uint){
         return stakesCount(msg.sender);
     }
 
-    function getStakeInfo(uint _stake_index) public view returns(address,uint256, uint256, bool, uint, bool){
+    function getStakeInfo(uint _stake_index) external view returns(address,uint256, uint256, bool, uint, bool){
         return stakeInfo(msg.sender, _stake_index);
     }
 
-    function withdraw(uint _stake_index) public returns(bool){
-        require(stakesCount(msg.sender) > 0, "FarmSwap: The user does not have any stakes");
+    function withdraw(uint _stake_index) external returns(bool){
         //return staked amount of USDC 
-        uint256 amount = withdrawAmount(msg.sender, _stake_index);
-        //calculate penalty
-        uint256 penalty = calculatePenalty(msg.sender, _stake_index);
-        //calculate reward
-        uint256 reward = calculateStakeReward(msg.sender, _stake_index);
-        //return staked USDC tokens to user
+        (uint256 amount, uint256 penalty, uint256 reward) = withdrawAmount(msg.sender, _stake_index);
         uint256 final_amount = amount - penalty;
         //approve allowance to enable withdraw
         if(_usdc.transfer(msg.sender, final_amount)){
