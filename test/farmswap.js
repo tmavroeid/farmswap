@@ -83,7 +83,7 @@ contract("FarmSwap", async accounts => {
         try {
             await instance.withdraw(1,{from:accounts[1]});
         }catch(error){
-            assert.equal(error.reason, "FarmSwap: The user does not have any stakes")
+            assert.equal(error.reason, "The user does not have any stakes")
         }        
     });
 

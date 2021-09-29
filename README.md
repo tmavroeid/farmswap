@@ -33,7 +33,7 @@ The algorithm calculating the rewards is implemented inside the function **calcu
 - Calculate the stake duration via (block.timestamp — the period of activity of the stake); this duration is calculated in seconds.
 - Then the stake duration is divided by 1 hours (Solidity internal variable for 3600 seconds); this is done cause the rewards' rate is also calculated by hour.
 - Multiply by the stake amount with the stake duration in hours.
-- Divide by the reward per hour rate which is store in a cariable.
+- Divide by the reward per hour rate which is store in a variable.
 
 ## Testing
 
