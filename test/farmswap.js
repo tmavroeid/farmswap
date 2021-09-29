@@ -72,11 +72,10 @@ contract("FarmSwap", async accounts => {
         await usdc_instance.approve(instance.address,1000, {from: accounts[1]})
         await instance.deposit(1000,true,6,{from:accounts[1]})
         var response = await instance.getStakeInfo(0,{from:accounts[1]});
-        assert.equal(response[0], accounts[1],"the account should be the same with the one made the deposit/stake");
-        assert.equal(response[1], 1000,"the amount should be 1000");
-        assert.equal(response[3], true,"the lockup decision should true");
-        assert.equal(response[4], 6,"the lockup period should be 6");
-        assert.equal(response[5], false,"the withdrawn value should be false ");
+        assert.equal(response[0], 1000,"the amount should be 1000");
+        assert.equal(response[2], true,"the lockup decision should true");
+        assert.equal(response[3], 6,"the lockup period should be 6");
+        assert.equal(response[4], false,"the withdrawn value should be false ");
     });
     
     it("raise error when withdraw non-existant stake", async() => {

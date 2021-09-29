@@ -38,7 +38,7 @@ contract FarmSwap is Ownable,Staking{
         return stakesCount(msg.sender);
     }
 
-    function getStakeInfo(uint _stake_index) external view returns(address,uint256, uint256, bool, uint, bool){
+    function getStakeInfo(uint _stake_index) external view returns(uint256, uint256, bool, uint, bool){
         return stakeInfo(msg.sender, _stake_index);
     }
 
